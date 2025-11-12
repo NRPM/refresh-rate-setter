@@ -116,6 +116,48 @@ def get_current_mode(device_name=None):
         return None
     return dm
 
+def get_available_refresh_rates(device_name=None):
+    """
+    Get all available refresh rates for the current resolution.
+    Returns a sorted tuple of integers (Hz values).
+    """
+    try:
+        # Get current display mode to determine current resolution
+        dm = get_current_mode(device_name)
+        if dm is None:
+            print("Warning: Could not get current display mode. Using default rates.")
+            return (60, 120, 144, 165, 240)  # Fallback to common rates
+        
+        # Get current resolution
+        current_resolution = (dm.dmPelsWidth, dm.dmPelsHeight)
+        print(f"Current resolution: {current_resolution[0]}x{current_resolution[1]}")
+        
+        # Get all display modes
+        all_modes = list_modes(device_name)
+        
+        # Filter to only get refresh rates at current resolution
+        available_rates = []
+        for (width, height, bpp, refresh_rate) in all_modes:
+            if (width, height) == current_resolution:
+                available_rates.append(refresh_rate)
+        
+        # Remove duplicates and sort
+        available_rates = sorted(set(available_rates))
+        
+        if not available_rates:
+            print("Warning: No refresh rates found. Using default rates.")
+            return (60, 120, 144, 165, 240)  # Fallback
+        
+        print(f"Available refresh rates: {available_rates}")
+        
+        # Return as tuple
+        return tuple(available_rates)
+        
+    except Exception as e:
+        print(f"Error getting available refresh rates: {e}")
+        # Fallback to common refresh rates
+        return (60, 120, 144, 165, 240)
+
 def set_refresh_rate(target_hz, device_name=None, test_first=True):
     dm = get_current_mode(device_name)
     if dm is None:
@@ -180,7 +222,19 @@ class RefreshGUI:
 
         # State
         self.override_var = tk.BooleanVar(value=False)
-        self.selected_rate = tk.IntVar(value=240)
+        
+        # Get available refresh rates dynamically
+        self.available_rates = get_available_refresh_rates()
+        
+        # Set default selected rate to the highest available, or 240 if available
+        if 240 in self.available_rates:
+            default_rate = 240
+        elif self.available_rates:
+            default_rate = max(self.available_rates)
+        else:
+            default_rate = 60
+            
+        self.selected_rate = tk.IntVar(value=default_rate)
         self.current_status_var = tk.StringVar(value="Unknown")
         self.current_rate_var = tk.StringVar(value="Unknown")
         self.tray_icon = None
@@ -203,8 +257,9 @@ class RefreshGUI:
         ttk.Checkbutton(override_row, text="Override automatic behavior", variable=self.override_var).pack(side=tk.LEFT)
         ttk.Label(override_row, text="Select refresh rate:").pack(side=tk.LEFT, padx=(8,6))
         self.rate_combo = ttk.Combobox(override_row, textvariable=self.selected_rate, width=8, state="readonly")
-        # Common options - will be filtered by availability later
-        self.rate_combo['values'] = (60, 240)
+        
+        # Populate dropdown with dynamically detected refresh rates
+        self.rate_combo['values'] = self.available_rates
         self.rate_combo.pack(side=tk.LEFT)
 
         btn_row = ttk.Frame(frm)
@@ -249,7 +304,13 @@ class RefreshGUI:
             if self.override_var.get():
                 target = int(self.selected_rate.get())
             else:
-                target = 240 if is_plugged_in() else 60
+                # For automatic mode, use highest available rate when charging, lowest when not
+                if is_plugged_in():
+                    # Use 240 Hz if available, otherwise use highest available
+                    target = 240 if 240 in self.available_rates else max(self.available_rates)
+                else:
+                    # Use 60 Hz if available, otherwise use lowest available
+                    target = 60 if 60 in self.available_rates else min(self.available_rates)
             set_refresh_rate(target)
             self.current_rate_var.set(f"{target} Hz")
         except Exception as e:
@@ -338,7 +399,14 @@ class RefreshGUI:
             if plugged is not None and (last_plugged is None or plugged != last_plugged):
                 # state changed -> decide and apply (respect override)
                 if not self.override_var.get():
-                    target = 240 if plugged else 60
+                    # Use dynamic rate selection based on available rates
+                    if plugged:
+                        # Use 240 Hz if available, otherwise highest
+                        target = 240 if 240 in self.available_rates else max(self.available_rates)
+                    else:
+                        # Use 60 Hz if available, otherwise lowest
+                        target = 60 if 60 in self.available_rates else min(self.available_rates)
+                    
                     try:
                         set_refresh_rate(target)
                         self.root.after(0, self.current_rate_var.set, f"{target} Hz")
@@ -362,8 +430,10 @@ def main():
 
     root = tk.Tk()
     app = RefreshGUI(root)
-    root.withdraw()
-    app.start_tray()
+    # Show the GUI on startup instead of starting in tray
+    # If you want to start in tray, uncomment these lines:
+    # root.withdraw()
+    # app.start_tray()
     try:
         root.mainloop()
     except KeyboardInterrupt:
