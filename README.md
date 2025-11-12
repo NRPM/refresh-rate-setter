@@ -1,5 +1,6 @@
 # refresh-rate-setter
-(THIS PROGRAM WAS MADE BY USING CHATGPT AND CLAUDE)
+(THIS PROGRAM WAS MADE BY USING CHATGPT AND CLAUDE AS A SHORT PERSONAL VIBE CODING PROJECT)
+Feel free to use it though :)
 
 This is a simple program to set the refresh rate of the display of a Windows 11 laptop depending on it's charging status.
 
