@@ -7,6 +7,9 @@ This is a simple program to set the refresh rate of the display of a Windows 11 
 
 ** THIS ONLY WORKS IF YOUR LAPTOP DISPLAY SUPPORTS 60 HZ AND 240 HZ AS MULTIPLE REFRESH RATES. **
 
+# How to run
+Just double click on the refresh_set_runner.bat file to run the program.
+
 # My Modifications 
 Modified some text in the dropdown menu when opening the app from the systray, and modified the program so that it starts minimized by default.
 
