@@ -16,3 +16,5 @@ Extract the zip file and double click on the .exe file to run the program. (The 
 3. Type "shell:startup" to open the startup folder.
 4. Copy the shortcut into this folder.
 5. Now you can freely enable or disable it to start whenever the laptop starts up through the task manager!
+
+(THE PYTHON SCRIPT REQUIRES YOU TO INSTALL PYSTRAY. IT CAN BE INSTALLED USING "pip install pystray")
