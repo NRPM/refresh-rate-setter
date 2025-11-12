@@ -14,3 +14,5 @@ Just double click on the refresh_set_runner.bat file to run the program. (The pr
 3. Type "shell:startup" to open the startup folder.
 4. Copy the shortcut into this folder.
 5. Now you can freely enable or disable it to start whenever the laptop starts up through the task manager!
+
+(Made a mistake in the commit message. The batch file will still cause the cmd jumpscare)
