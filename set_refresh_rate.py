@@ -227,12 +227,10 @@ class RefreshGUI:
         self.available_rates = get_available_refresh_rates()
         
         # Set default selected rate to the highest available, or 240 if available
-        if 240 in self.available_rates:
-            default_rate = 240
-        elif self.available_rates:
+        if self.available_rates:
             default_rate = max(self.available_rates)
         else:
-            default_rate = 60
+            default_rate = min(self.available_rates)
             
         self.selected_rate = tk.IntVar(value=default_rate)
         self.current_status_var = tk.StringVar(value="Unknown")
@@ -432,8 +430,8 @@ def main():
     app = RefreshGUI(root)
     # Show the GUI on startup instead of starting in tray
     # If you want to start in tray, uncomment these lines:
-    # root.withdraw()
-    # app.start_tray()
+    root.withdraw()
+    app.start_tray()
     try:
         root.mainloop()
     except KeyboardInterrupt:
