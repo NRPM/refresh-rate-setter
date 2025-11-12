@@ -304,11 +304,11 @@ class RefreshGUI:
             else:
                 # For automatic mode, use highest available rate when charging, lowest when not
                 if is_plugged_in():
-                    # Use 240 Hz if available, otherwise use highest available
-                    target = 240 if 240 in self.available_rates else max(self.available_rates)
+                    # use highest available
+                    target = max(self.available_rates)
                 else:
-                    # Use 60 Hz if available, otherwise use lowest available
-                    target = 60 if 60 in self.available_rates else min(self.available_rates)
+                    # use lowest available
+                    target = min(self.available_rates)
             set_refresh_rate(target)
             self.current_rate_var.set(f"{target} Hz")
         except Exception as e:
@@ -399,11 +399,11 @@ class RefreshGUI:
                 if not self.override_var.get():
                     # Use dynamic rate selection based on available rates
                     if plugged:
-                        # Use 240 Hz if available, otherwise highest
-                        target = 240 if 240 in self.available_rates else max(self.available_rates)
+                        # Use highest
+                        target = max(self.available_rates)
                     else:
-                        # Use 60 Hz if available, otherwise lowest
-                        target = 60 if 60 in self.available_rates else min(self.available_rates)
+                        # Use lowest
+                        target = min(self.available_rates)
                     
                     try:
                         set_refresh_rate(target)
