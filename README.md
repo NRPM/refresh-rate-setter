@@ -8,7 +8,7 @@ This is a simple program to set the refresh rate of the display of a Windows 11 
 When the laptop is plugged in, the refresh rate is set to the maximum supported refresh rate and when it is unplugged, the refresh rate reduces to the minimum supported refresh rate.
 
 # How to run
-Extract the zip file and double click on the .exe file to run the program. (The program always starts minimized to systray)
+Download the .exe file and double click on it to run the program. (The program always starts minimized to systray)
 
 # Starting the program at system StartUp
 1. Make a shortcut of the .exe file.
@@ -16,5 +16,8 @@ Extract the zip file and double click on the .exe file to run the program. (The 
 3. Type "shell:startup" to open the startup folder.
 4. Copy the shortcut into this folder.
 5. Now you can freely enable or disable it to start whenever the laptop starts up through the task manager!
+
+   ## OR
+Use the Task Scheduler to set the program to run whenever a user logs on.
 
 (THE PYTHON SCRIPT REQUIRES YOU TO INSTALL PYSTRAY. IT CAN BE INSTALLED USING "pip install pystray")
